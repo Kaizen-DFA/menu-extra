@@ -1,16 +1,10 @@
-ESX = nil
-TriggerEvent('esx:getActiveLifeObject', function(obj) ESX = obj end)
+local QBCore = exports["qb-core"]:GetCoreObject()
 
 ----------------------------------------------------------------
-
-RegisterNetEvent('esx:playerLoaded')
-AddEventHandler('esx:playerLoaded', function(xPlayer)
-	ESX.PlayerData = xPlayer
-end)
-
-RegisterNetEvent('esx:setJob')
-AddEventHandler('esx:setJob', function(job)
-	ESX.PlayerData.job = job
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    QBCore.Functions.GetPlayerData(function(PlayerData)
+        PlayerJob = PlayerData.job
+    end)
 end)
 
 function DrawText3Ds(x, y, z, text)
@@ -136,11 +130,11 @@ function OpenMenuPoliceChest()
 
 				if IsPedInAnyVehicle(PlayerPedId(), false) == false then 
 					RageUI.CloseAll()
-					exports['ActiveLife']:Alert("", "Tu n'est plus dans un véhicule", 10000, 'error')
+					QBCore.Functions.Notify("Tu n'est plus dans un véhicule", "error", 5000)
 					break
 				elseif #(GetEntityCoords(PlayerPedId()) - vector3(-1077.71, -845.60, 4.57)) >= 5.0 then 
 					RageUI.CloseAll()
-					exports['ActiveLife']:Alert("", "Tu es trop loin du point !", 10000, 'error')
+					QBCore.Functions.Notify("Tu es trop loin du point !", "error", 5000)
 					break
 				end
 
@@ -199,7 +193,7 @@ function OpenMenuPoliceChest()
 
 							if Vengine2 >= 99.0 then 
 
-								exports['ActiveLife']:Alert("", "Vous avez mis tout les extras de votre véhicule", 5000, 'success')
+								QBCore.Functions.Notify("Vous avez mis tout les extras de votre véhicule", "success", 5000)
 								for i = startIndex, GetNumVehicleModData(VPed, 'extras'), 1 do
 									liste = 0
 									while true do 
@@ -212,7 +206,7 @@ function OpenMenuPoliceChest()
 									end 
 								end
 							else 
-								exports['ActiveLife']:Alert("", "Véhicule trop abimé", 5000, 'error')
+								QBCore.Functions.Notify("Véhicule trop abimé", "error", 5000)
 							end
 						end
 					end)
@@ -231,11 +225,11 @@ function OpenMenuPoliceChest()
 									number = (i + 1)
 									mis = true
 									SetVehicleModData(VPed, 'extras', {id = number, enable = 0})
-									exports['ActiveLife']:Alert("", "Vous avez mis l'extra n°"..number.." sur votre véhicule.", 1000, 'success')
+									QBCore.Functions.Notify("Vous avez mis l'extra n°"..number.." sur votre véhicule.", "success", 5000)
 									Citizen.SetTimeout(500, function() TimeoutExtra = false end)
 
 								else 
-									exports['ActiveLife']:Alert("", "Véhicule trop abimé", 5000, 'error')
+									QBCore.Functions.Notify("Véhicule trop abimé", "error", 5000)
 								end
                             end
                         end)
@@ -252,7 +246,7 @@ function OpenMenuPoliceChest()
 
 							if Vengine2 >= 99.0 then 
 
-								exports['ActiveLife']:Alert("", "Vous avez retiré tout les extras de votre véhicule", 5000, 'nosuccess')
+								QBCore.Functions.Notify("Vous avez retiré tout les extras de votre véhicule", "success", 5000)
 								for i = startIndex, GetNumVehicleModData(VPed, 'extras'), 1 do
 									liste = 0
 									while true do 
@@ -265,7 +259,7 @@ function OpenMenuPoliceChest()
 									end 
 								end
 							else 
-								exports['ActiveLife']:Alert("", "Véhicule trop abimé", 5000, 'error')
+								QBCore.Functions.Notify("Véhicule trop abimé", "error", 5000)
 							end
 						end
 					end)
@@ -283,10 +277,10 @@ function OpenMenuPoliceChest()
 									TimeoutExtra = true
 									number = (i + 1)
 									SetVehicleModData(VPed, 'extras', {id = number, enable = 1})
-									exports['ActiveLife']:Alert("", "Vous avez mis l'extra n°"..number.." sur votre véhicule.", 1000, 'nosuccess')
+									QBCore.Functions.Notify("Vous avez mis l'extra n°"..number.." sur votre véhicule.", "success", 5000)
 									Citizen.SetTimeout(500, function() TimeoutExtra = false end)
 								else 
-									exports['ActiveLife']:Alert("", "Véhicule trop abimé", 5000, 'error')
+									QBCore.Functions.Notify("Véhicule trop abimé", "error", 5000)
 								end
 							end
 						end)
@@ -300,30 +294,24 @@ function OpenMenuPoliceChest()
 end
                             
 local vehicle = {
-	'18charger',
-	'cvpi',
-	'16charger',
-	'PBUFFALO4',
-	'16exp',
 	'police',
 	'police2',
 	'police3',
 	'police4',
-	'POLICE4',
 }
 
 Citizen.CreateThread(function()
     while true do 
         Wait(4)
         local CoordsP = GetEntityCoords(PlayerPedId())
-			if ESX.PlayerData.job and ESX.PlayerData.job.name == 'police' then
+			if QBCore.Functions.GetPlayerData().job.name == 'police' then
 				if IsPedInAnyVehicle(PlayerPedId(), false) ~= false then  
 					for k,v in pairs(ConfigModifVehicleSAPD) do
 						if #(CoordsP - v.Position) <= v.Distance then
 							DrawText3Ds(v.Position.x, v.Position.y, v.Position.z, ""..v.Text3D.."")
 							DrawMarker(36, v.Position.x, v.Position.y, v.Position.z-0.97, v.Marker.dirX, v.Marker.dirY, v.Marker.dirZ, v.Marker.rotX, v.Marker.rotY, v.Marker.rotZ, v.Marker.scaleX, v.Marker.scaleY, v.Marker.scaleZ, v.Color.red, v.Color.green, v.Color.blue, v.Color.alpha, false, false, true, false, false, false, false, false)
 							if IsControlJustPressed(0, 38) and #(CoordsP - v.Position) <= 2.0 then 
-								print(GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsIn(PlayerPedId(), false))))
+								--print(GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsIn(PlayerPedId(), false))))
 								for _,v in pairs(vehicle) do 
 									if GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsIn(PlayerPedId(), false))) == v then 
 										OpenMenuPoliceChest()
@@ -339,6 +327,6 @@ Citizen.CreateThread(function()
 				end
 			else
 				Wait(3000)
-			end
+		end
     end
 end)
