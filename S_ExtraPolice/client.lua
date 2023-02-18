@@ -10,7 +10,6 @@ end)
 function DrawText3Ds(x, y, z, text)
     local px,py,pz=table.unpack(GetGameplayCamCoords())
     local dist = GetDistanceBetweenCoords(px,py,pz, x,y,z, 1)
- 
     local scale = (1/dist)*2
     local fov = (1/GetGameplayCamFov())*100
     local scale = scale*fov
@@ -53,7 +52,6 @@ function SetVehicleModData(vehicle, modType, data)
 				table.insert(tempList, id)
 			end
 		end
-		
 		if (DoesExtraExist(vehicle, tempList[data.id])) then
 			SetVehicleExtra(vehicle, tempList[data.id], data.enable)
 		end
@@ -69,7 +67,6 @@ function GetVehicleCurrentMod(vehicle, modType, data)
 				table.insert(tempList, id)
 			end
 		end
-		
 		if (tempList[data] ~= nil and IsVehicleExtraTurnedOn(vehicle, tempList[data])) then
 			return 0
 		end
@@ -80,7 +77,6 @@ end
 
 function GetNumVehicleModData(vehicle, modType)
 	SetVehicleModKit(vehicle, 0)
-
 	if (modType == 'extras') then
 		local tempCount = -1
 		for id = 0, 25, 1 do
@@ -90,7 +86,6 @@ function GetNumVehicleModData(vehicle, modType)
 		end
 		return tempCount
 	end
-
 	return -1
 end
 
@@ -115,8 +110,8 @@ local couleur = {
     [7] = {color = 38, color2 = 38},
     [8] = {color = 64, color2 = 64},
 }
-local arrayIndexcar = 1
 
+local arrayIndexcar = 1
 local startIndex = 0
 local livery = 0
 local Window = 0
@@ -127,7 +122,6 @@ function OpenMenuPoliceChest()
 		Citizen.CreateThread(function()
             while PoliceOpenExtra do Wait(0)
 				local VPed = GetVehiclePedIsIn(PlayerPedId(), false)
-
 				if IsPedInAnyVehicle(PlayerPedId(), false) == false then 
 					RageUI.CloseAll()
 					QBCore.Functions.Notify("Tu n'est plus dans un véhicule", "error", 5000)
@@ -137,7 +131,6 @@ function OpenMenuPoliceChest()
 					QBCore.Functions.Notify("Tu es trop loin du point !", "error", 5000)
 					break
 				end
-
                 RageUI.IsVisible(RMenu:Get('PoliceOpenExtra', 'menu'), true, true, true, function()
                     RageUI.ButtonWithStyle("→ Mettre des extras", nil, {RightLabel = "→→"}, true ,function(_,_,s)
                     end, RMenu:Get('PoliceOpenExtra', 'mettreextra'))
@@ -148,9 +141,7 @@ function OpenMenuPoliceChest()
 					RageUI.ButtonWithStyle("→ Autres", nil, {RightLabel = "→→"}, true ,function(_,_,s)
                     end, RMenu:Get('PoliceOpenExtra', 'autremenu'))
                 end)
-
                 RageUI.IsVisible(RMenu:Get('PoliceOpenExtra', 'autremenu'), true, true, true, function()
-
 					RageUI.ButtonWithStyle('Livery', nil, {RightLabel = "→→"}, true, function(_,_,s)
 						if s then
 							local countlivery = GetVehicleLiveryCount(VPed)
@@ -161,7 +152,6 @@ function OpenMenuPoliceChest()
 							end
 						end
 					end)
-
 					RageUI.List("Couleurs", arraycar, arrayIndexcar, nil, {}, true, function(Hovered, Active, Selected, i) arrayIndexcar = i
 						if (Selected) then
 							if couleur[arrayIndexcar] then
@@ -169,7 +159,6 @@ function OpenMenuPoliceChest()
 							end
 						end
 					end)
-
 					RageUI.ButtonWithStyle('Vitre', nil, {RightLabel = "→→"}, true, function(_,_,s)
 						if s then
 							local CountWindow = GetNumVehicleWindowTints(VPed)
@@ -180,19 +169,14 @@ function OpenMenuPoliceChest()
 							end
 						end
 					end)
-
-
 				end)
 
                 RageUI.IsVisible(RMenu:Get('PoliceOpenExtra', 'mettreextra'), true, true, true, function()
-				
 					RageUI.ButtonWithStyle("→ Mettre TOUT les extras", nil, {RightLabel = "→→"}, true ,function(_,_,s)
 						if s then 
 							local Vengine = GetVehicleEngineHealth(VPed)/10
 							local Vengine2 = math.floor(Vengine)
-
 							if Vengine2 >= 99.0 then 
-
 								QBCore.Functions.Notify("Vous avez mis tout les extras de votre véhicule", "success", 5000)
 								for i = startIndex, GetNumVehicleModData(VPed, 'extras'), 1 do
 									liste = 0
@@ -212,33 +196,28 @@ function OpenMenuPoliceChest()
 					end)
 
 					RageUI.Separator("↓ Gestion Extra ↓")
-
                     for i = startIndex, GetNumVehicleModData(VPed, 'extras'), 1 do
                         RageUI.ButtonWithStyle("Extra n°"..(i + 1).."", nil, {RightLabel = "→→"}, not TimeoutExtra ,function(_,_,s)
                             if s then
 								local Vengine = GetVehicleEngineHealth(VPed)/10
 								local Vengine2 = math.floor(Vengine)
-	
-								if Vengine2 >= 99.0 then 
 
+								if Vengine2 >= 99.0 then 
 									TimeoutExtra = true
 									number = (i + 1)
 									mis = true
 									SetVehicleModData(VPed, 'extras', {id = number, enable = 0})
 									QBCore.Functions.Notify("Vous avez mis l'extra n°"..number.." sur votre véhicule.", "success", 5000)
 									Citizen.SetTimeout(500, function() TimeoutExtra = false end)
-
 								else 
 									QBCore.Functions.Notify("Véhicule trop abimé", "error", 5000)
 								end
                             end
                         end)
                     end
-
                 end)
 
 				RageUI.IsVisible(RMenu:Get('PoliceOpenExtra', 'retirerextra'), true, true, true, function()
-
 					RageUI.ButtonWithStyle("→ Retirer TOUT les extras", nil, {RightLabel = "→→"}, true ,function(_,_,s)
 						if s then 
 							local Vengine = GetVehicleEngineHealth(VPed)/10
@@ -265,15 +244,12 @@ function OpenMenuPoliceChest()
 					end)
 
 					RageUI.Separator("↓ Gestion Extra ↓")
-
 					for i = startIndex, GetNumVehicleModData(VPed, 'extras'), 1 do
 						RageUI.ButtonWithStyle("Extra n°"..(i + 1).."", nil, {RightLabel = "→→"}, not TimeoutExtra ,function(_,_,s)
 							if s then
 								local Vengine = GetVehicleEngineHealth(VPed)/10
 								local Vengine2 = math.floor(Vengine)
-	
 								if Vengine2 >= 99.0 then 
-
 									TimeoutExtra = true
 									number = (i + 1)
 									SetVehicleModData(VPed, 'extras', {id = number, enable = 1})
@@ -285,9 +261,7 @@ function OpenMenuPoliceChest()
 							end
 						end)
 					end
-
 				end)
-
             end 
         end)
     end 
